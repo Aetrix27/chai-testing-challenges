@@ -7,6 +7,12 @@ const Message = require('../models/message')
 /** Route to get all messages. */
 router.get('/', (req, res) => {
     // TODO: Get all Message objects using `.find()`
+    Message.find().then((messages) => {
+        return res.json({messages})
+    })
+    .catch((err) => {
+        throw err.message
+    });
 
     // TODO: Return the Message objects as a JSON list
 })
@@ -15,6 +21,12 @@ router.get('/', (req, res) => {
 router.get('/:messageId', (req, res) => {
     // TODO: Get the Message object with id matching `req.params.id`
     // using `findOne`
+    Message.findOne({_id: req.params.messageId})
+    .then(result => {
+        res.json(result)
+    }).catch(err => {
+        throw err.message
+    })
 
     // TODO: Return the matching Message object as JSON
 })
@@ -41,6 +53,8 @@ router.post('/', (req, res) => {
 /** Route to update an existing message. */
 router.put('/:messageId', (req, res) => {
     // TODO: Update the matching message using `findByIdAndUpdate`
+    //Message.findByIdAndUpdate(id, { name: 'messageId' }, options, callback)
+
 
     // TODO: Return the updated Message object as JSON
 })
