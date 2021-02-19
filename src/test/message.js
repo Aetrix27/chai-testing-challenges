@@ -56,7 +56,7 @@ describe('Message API endpoints', () => {
     afterEach((done) => {
         User.deleteOne({ username: 'David' })
         .then(() => {
-            Message.deleteOne({ title: 'message_title' })
+            Message.deleteMany({ title: ['message_title', 'another_message'] })
             .then(() => {
                 done()
             })
@@ -73,7 +73,6 @@ describe('Message API endpoints', () => {
             done()
         })
        
-        //done()
     }).timeout(1500)
 
     it('should get one specific message', (done) => {
@@ -91,16 +90,15 @@ describe('Message API endpoints', () => {
     })
 
     it('should post a new message', (done) => {
-        // TODO: Complete this
         chai.request(app)
         .post('/messages')
-        .send({title: 'message_title'})
+        .send({title: 'another_message'})
         .end((err, res) => {
             if (err) { done(err) }
             expect(res.body.message).to.be.an('object')
             expect(res.body.message).to.have.property('body')
 
-            Message.findOne({title: 'message_title'}).then(message => {
+            Message.findOne({title: 'another_message'}).then(message => {
                 expect(message).to.be.an('object')
                 done()
             })
@@ -110,11 +108,33 @@ describe('Message API endpoints', () => {
     })
 
     it('should update a message', (done) => {
-       done()
+        chai.request(app)
+        .put(`/messages/${SAMPLE_MESSAGE_ID}`)
+        .send({title: 'another_message'})
+        .end((err, res) => {
+            if (err) { done(err) }
+            expect(res.body.message).to.be.an('object')
+            expect(res.body.message).to.have.property('body')
+
+            Message.findOne({title: 'another_message'}).then(message => {
+                expect(message).to.be.an('object')
+                done()
+            })
+        })
     })
 
     it('should delete a message', (done) => {
-        // TODO: Complete this
-        done()
+        chai.request(app)
+        .delete(`/messages/${SAMPLE_MESSAGE_ID}`)
+        .end((err, res) => {
+            if (err) { done(err) }
+            expect(res.body.message).to.equal('Successfully deleted.')
+            expect(res.body._id).to.equal(SAMPLE_MESSAGE_ID)
+
+            Message.findOne({title: 'message_title'}).then(message => {
+                expect(message).to.equal(null)
+                done()
+            })
+        })
     })
 })
